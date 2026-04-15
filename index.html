@@ -1,150 +1,862 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<title>TT Birthday Quest 💖</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TT Birthday Quest ✨</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+Thai:wght@400;700&display=swap"
+    rel="stylesheet"
+  >
 
-<style>
-body {
-  margin: 0;
-  background: radial-gradient(circle, #0f2027, #203a43, #2c5364);
-  color: white;
-  font-family: 'Orbitron', sans-serif;
-  text-align: center;
-}
+  <style>
+    :root {
+      --bg1: #08111f;
+      --bg2: #132238;
+      --bg3: #1d3557;
+      --pink: #ff5fa2;
+      --pink-soft: #ff9ac4;
+      --cyan: #72f2ff;
+      --gold: #ffd166;
+      --white: #f7fbff;
+      --glass: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.18);
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
 
-h1 {
-  margin-top: 20px;
-  letter-spacing: 3px;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-canvas {
-  background: black;
-  border: 2px solid #00ffe0;
-  margin-top: 20px;
-}
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      overflow-x: hidden;
+    }
 
-#typing {
-  margin-top: 20px;
-  font-size: 18px;
-  height: 30px;
-}
+    body {
+      color: var(--white);
+      font-family: "Noto Sans Thai", sans-serif;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255, 95, 162, 0.15), transparent 25%),
+        radial-gradient(circle at 80% 15%, rgba(114, 242, 255, 0.12), transparent 25%),
+        radial-gradient(circle at 50% 80%, rgba(255, 209, 102, 0.08), transparent 30%),
+        linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3));
+      position: relative;
+    }
 
-#ending {
-  display: none;
-  animation: fade 2s;
-}
+    .stars,
+    .hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
 
-@keyframes fade {
-  from {opacity: 0;}
-  to {opacity: 1;}
-}
-</style>
+    .star, .heart-float {
+      position: absolute;
+      opacity: 0.8;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+
+    .star {
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(255,255,255,0.9);
+      animation-name: twinkle;
+    }
+
+    .heart-float {
+      font-size: 16px;
+      animation-name: floatUp;
+      opacity: 0.25;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { transform: scale(0.8); opacity: 0.4; }
+      50% { transform: scale(1.8); opacity: 1; }
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(110vh) scale(0.8);
+        opacity: 0;
+      }
+      15% { opacity: 0.3; }
+      100% {
+        transform: translateY(-20vh) scale(1.2);
+        opacity: 0;
+      }
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 16px 50px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(8px);
+      font-size: 13px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .title {
+      font-family: "Press Start 2P", cursive;
+      font-size: clamp(20px, 4vw, 40px);
+      line-height: 1.5;
+      margin: 0 0 14px;
+      color: #fff;
+      text-shadow:
+        0 0 10px rgba(255,255,255,0.25),
+        0 0 20px rgba(255,95,162,0.35),
+        0 0 35px rgba(114,242,255,0.20);
+    }
+
+    .subtitle {
+      max-width: 720px;
+      margin: 0 auto;
+      color: rgba(255,255,255,0.88);
+      font-size: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 22px;
+      align-items: stretch;
+      margin-top: 28px;
+    }
+
+    .panel {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .left-panel {
+      padding: 18px;
+    }
+
+    .game-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .game-head h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      font-size: 13px;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      background:
+        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px),
+        radial-gradient(circle at center, #15283d, #0a1422);
+      background-size: 40px 40px, 40px 40px, cover;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.4);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .game-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .hint {
+      font-size: 14px;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 12px 16px;
+      border-radius: 14px;
+      color: white;
+      font-weight: 700;
+      font-family: "Noto Sans Thai", sans-serif;
+      transition: 0.2s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--pink), #ff7ab5);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #3bc9db, #4dabf7);
+    }
+
+    .right-panel {
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 100%;
+    }
+
+    .love-card {
+      text-align: center;
+      padding: 12px;
+    }
+
+    .love-card .mini {
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .love-card h3 {
+      margin: 0 0 14px;
+      font-size: clamp(24px, 4vw, 38px);
+      line-height: 1.25;
+    }
+
+    .message-box {
+      margin: 16px auto 0;
+      padding: 18px 18px;
+      max-width: 500px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 22px;
+      line-height: 1.9;
+      color: rgba(255,255,255,0.92);
+      min-height: 160px;
+    }
+
+    .message-line {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: riseIn 0.7s forwards;
+    }
+
+    .message-line:nth-child(1) { animation-delay: 0.15s; }
+    .message-line:nth-child(2) { animation-delay: 0.4s; }
+    .message-line:nth-child(3) { animation-delay: 0.65s; }
+    .message-line:nth-child(4) { animation-delay: 0.9s; }
+
+    @keyframes riseIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .typing {
+      margin-top: 18px;
+      min-height: 32px;
+      font-family: "Press Start 2P", cursive;
+      color: var(--pink-soft);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .mobile-pad {
+      display: none;
+      margin-top: 14px;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .pad-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      background: rgba(2, 8, 20, 0.65);
+      backdrop-filter: blur(16px);
+      z-index: 20;
+    }
+
+    .overlay.show {
+      display: flex;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .final-card {
+      width: min(760px, 100%);
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,0.18), transparent 30%),
+        linear-gradient(135deg, rgba(255,95,162,0.18), rgba(114,242,255,0.12));
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 30px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.38);
+      padding: 34px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .final-title {
+      font-family: "Press Start 2P", cursive;
+      font-size: clamp(18px, 3vw, 30px);
+      line-height: 1.8;
+      margin: 0 0 16px;
+      color: #fff;
+      text-shadow: 0 0 20px rgba(255,255,255,0.25);
+    }
+
+    .final-text {
+      font-size: 18px;
+      line-height: 1.95;
+      color: rgba(255,255,255,0.95);
+      max-width: 560px;
+      margin: 0 auto;
+      min-height: 150px;
+    }
+
+    .close-btn {
+      margin-top: 18px;
+    }
+
+    .confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 21;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .right-panel {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .mobile-pad {
+        display: flex;
+      }
+
+      .hint {
+        width: 100%;
+      }
+
+      .title {
+        line-height: 1.8;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="stars" id="stars"></div>
+  <div class="hearts" id="hearts"></div>
+  <canvas class="confetti" id="confetti"></canvas>
 
-<h1>TT QUEST 🎮</h1>
-<p>WASD → ไปหา 💖</p>
+  <div class="wrap">
+    <section class="hero">
+      <div class="badge">🎂 birthday mini game • special for TT 💖</div>
+      <h1 class="title">TT BIRTHDAY QUEST</h1>
+      <p class="subtitle">
+        เดินไปหาเจ้าหัวใจให้สำเร็จ แล้วจะปลดล็อกข้อความวันเกิดสุดน่ารัก ✨
+      </p>
+    </section>
 
-<canvas id="game" width="400" height="400"></canvas>
+    <section class="grid">
+      <div class="panel left-panel">
+        <div class="game-head">
+          <h2>🎮 Mini Game</h2>
+          <div class="controls">
+            <span class="chip">W A S D / Arrow Keys</span>
+            <span class="chip">Goal: ไปหา 💖</span>
+          </div>
+        </div>
 
-<div id="typing"></div>
+        <div class="canvas-wrap">
+          <canvas id="game" width="560" height="560"></canvas>
+        </div>
 
-<div id="ending">
-  <h2 id="text"></h2>
-  <p>Happy Birthday 22 y 💖</p>
-  <p>อยู่ด้วยกันไปนานๆนะ 🥺</p>
-  <p>เค้ารักเธอที่สุดเลย ❤️</p>
-</div>
+        <div class="game-footer">
+          <div class="hint" id="statusText">เริ่มเกมแล้ว ไปหา 💖 ด้านขวาล่างเลย</div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" id="musicBtn">เปิดเพลง ♫</button>
+            <button class="btn btn-primary" id="resetBtn">เริ่มใหม่</button>
+          </div>
+        </div>
 
-<audio autoplay loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9b7c6f.mp3">
-</audio>
+        <div class="mobile-pad">
+          <button class="pad-btn" data-move="up">↑</button>
+          <button class="pad-btn" data-move="left">←</button>
+          <button class="pad-btn" data-move="down">↓</button>
+          <button class="pad-btn" data-move="right">→</button>
+        </div>
+      </div>
 
-<script>
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+      <div class="panel right-panel">
+        <div class="love-card">
+          <div class="mini">for someone special</div>
+          <h3>Happy Birthday 22 y 💖</h3>
 
-let player = {x:20,y:20,size:20};
-let goal = {x:340,y:340,size:20};
+          <div class="message-box">
+            <div class="message-line">ขอให้ปีนี้เป็นปีที่ใจดีกับเธอมาก ๆ ✨</div>
+            <div class="message-line">ยิ้มเยอะ ๆ เจอแต่เรื่องดี ๆ และคนดี ๆ 🌷</div>
+            <div class="message-line">เหนื่อยวันไหนก็ขอให้ยังมีความสุขเล็ก ๆ อยู่ข้าง ๆ เสมอ 🤍</div>
+            <div class="message-line">แล้วก็... ไปถึงหัวใจในเกมให้ได้ก่อนนะ 😳</div>
+          </div>
 
-let img = new Image();
-img.src = "gf.jpg";
+          <div class="typing" id="typing"></div>
+        </div>
+      </div>
+    </section>
+  </div>
 
-img.onload = () => {
-  pixelateImage();
-  draw();
-};
+  <div class="overlay" id="overlay">
+    <div class="final-card">
+      <h2 class="final-title" id="finalTitle">MISSION COMPLETE 💖</h2>
+      <div class="final-text" id="finalText"></div>
+      <button class="btn btn-primary close-btn" id="closeOverlay">ปิดหน้าต่าง</button>
+    </div>
+  </div>
 
-let pixelCanvas = document.createElement("canvas");
-let pctx = pixelCanvas.getContext("2d");
+  <audio id="bgm" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9b7c6f.mp3?filename=beautiful-piano-ambient-11157.mp3" type="audio/mpeg">
+  </audio>
 
-function pixelateImage(){
-  let scale = 0.08;
-  let w = img.width * scale;
-  let h = img.height * scale;
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
 
-  pixelCanvas.width = w;
-  pixelCanvas.height = h;
+    const overlay = document.getElementById("overlay");
+    const finalText = document.getElementById("finalText");
+    const musicBtn = document.getElementById("musicBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const closeOverlay = document.getElementById("closeOverlay");
+    const statusText = document.getElementById("statusText");
+    const typing = document.getElementById("typing");
+    const bgm = document.getElementById("bgm");
 
-  pctx.drawImage(img, 0, 0, w, h);
-}
+    const gridSize = 40;
+    const tileCount = canvas.width / gridSize;
 
-function drawPixel(x,y){
-  ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(
-    pixelCanvas,
-    0,0,pixelCanvas.width,pixelCanvas.height,
-    x,y,120,120
-  );
-}
+    let gameEnded = false;
 
-function draw(){
-  ctx.clearRect(0,0,400,400);
+    const player = {
+      x: 0,
+      y: 0,
+      size: 24
+    };
 
-  ctx.fillStyle="#00ffe0";
-  ctx.fillRect(player.x,player.y,player.size,player.size);
+    const goal = {
+      x: tileCount - 1,
+      y: tileCount - 1
+    };
 
-  ctx.fillStyle="red";
-  ctx.fillRect(goal.x,goal.y,goal.size,goal.size);
+    const obstacles = [
+      {x:2,y:1},{x:2,y:2},{x:2,y:3},{x:2,y:4},
+      {x:4,y:4},{x:5,y:4},{x:6,y:4},{x:7,y:4},
+      {x:7,y:2},{x:7,y:3},
+      {x:9,y:5},{x:9,y:6},{x:9,y:7},
+      {x:3,y:8},{x:4,y:8},{x:5,y:8},
+      {x:11,y:3},{x:11,y:4},{x:11,y:5},
+      {x:10,y:10},{x:11,y:10},{x:12,y:10}
+    ];
 
-  drawPixel(140,120);
-}
+    function createSky() {
+      const stars = document.getElementById("stars");
+      const hearts = document.getElementById("hearts");
 
-document.addEventListener("keydown", e=>{
-  if(e.key==="w") player.y-=10;
-  if(e.key==="s") player.y+=10;
-  if(e.key==="a") player.x-=10;
-  if(e.key==="d") player.x+=10;
+      for (let i = 0; i < 80; i++) {
+        const s = document.createElement("div");
+        s.className = "star";
+        s.style.left = Math.random() * 100 + "vw";
+        s.style.top = Math.random() * 100 + "vh";
+        s.style.animationDuration = (1.5 + Math.random() * 3) + "s";
+        s.style.animationDelay = (Math.random() * 2) + "s";
+        stars.appendChild(s);
+      }
 
-  checkWin();
-  draw();
-});
+      for (let i = 0; i < 18; i++) {
+        const h = document.createElement("div");
+        h.className = "heart-float";
+        h.textContent = Math.random() > 0.5 ? "💖" : "✨";
+        h.style.left = Math.random() * 100 + "vw";
+        h.style.animationDuration = (8 + Math.random() * 8) + "s";
+        h.style.animationDelay = (Math.random() * 10) + "s";
+        h.style.fontSize = (12 + Math.random() * 16) + "px";
+        hearts.appendChild(h);
+      }
+    }
 
-function checkWin(){
-  if(player.x < goal.x+20 &&
-     player.x+20 > goal.x &&
-     player.y < goal.y+20 &&
-     player.y+20 > goal.y){
-    endGame();
-  }
-}
+    function drawRoundedRect(x, y, w, h, r, fillStyle) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+      ctx.fillStyle = fillStyle;
+      ctx.fill();
+    }
 
-function typeWriter(text, i=0){
-  if(i < text.length){
-    document.getElementById("text").innerHTML += text.charAt(i);
-    setTimeout(()=>typeWriter(text,i+1), 70);
-  }
-}
+    function drawHeart(cx, cy, size, color) {
+      ctx.save();
+      ctx.beginPath();
+      const topCurveHeight = size * 0.3;
+      ctx.moveTo(cx, cy + topCurveHeight);
+      ctx.bezierCurveTo(
+        cx, cy,
+        cx - size / 2, cy,
+        cx - size / 2, cy + topCurveHeight
+      );
+      ctx.bezierCurveTo(
+        cx - size / 2, cy + (size + topCurveHeight) / 2,
+        cx, cy + (size + topCurveHeight) / 2,
+        cx, cy + size
+      );
+      ctx.bezierCurveTo(
+        cx, cy + (size + topCurveHeight) / 2,
+        cx + size / 2, cy + (size + topCurveHeight) / 2,
+        cx + size / 2, cy + topCurveHeight
+      );
+      ctx.bezierCurveTo(
+        cx + size / 2, cy,
+        cx, cy,
+        cx, cy + topCurveHeight
+      );
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 18;
+      ctx.fill();
+      ctx.restore();
+    }
 
-function endGame(){
-  document.getElementById("ending").style.display="block";
-  typeWriter("To: TT 💖");
-}
-</script>
+    function isObstacle(x, y) {
+      return obstacles.some(o => o.x === x && o.y === y);
+    }
 
+    function drawBoard() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let y = 0; y < tileCount; y++) {
+        for (let x = 0; x < tileCount; x++) {
+          const px = x * gridSize;
+          const py = y * gridSize;
+
+          ctx.fillStyle = (x + y) % 2 === 0
+            ? "rgba(255,255,255,0.03)"
+            : "rgba(255,255,255,0.06)";
+          ctx.fillRect(px, py, gridSize, gridSize);
+        }
+      }
+
+      obstacles.forEach(o => {
+        const px = o.x * gridSize + 5;
+        const py = o.y * gridSize + 5;
+        drawRoundedRect(px, py, gridSize - 10, gridSize - 10, 12, "rgba(255,255,255,0.14)");
+
+        ctx.fillStyle = "rgba(255,255,255,0.30)";
+        ctx.font = "18px Noto Sans Thai";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("✦", px + (gridSize - 10) / 2, py + (gridSize - 10) / 2 + 1);
+      });
+
+      const gx = goal.x * gridSize + gridSize / 2;
+      const gy = goal.y * gridSize + gridSize / 2 - 8;
+      drawHeart(gx, gy, 24, "#ff5fa2");
+
+      const px = player.x * gridSize + 8;
+      const py = player.y * gridSize + 8;
+      drawRoundedRect(px, py, gridSize - 16, gridSize - 16, 10, "#72f2ff");
+
+      ctx.save();
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "18px Noto Sans Thai";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("✦", px + (gridSize - 16) / 2, py + (gridSize - 16) / 2 + 1);
+      ctx.restore();
+
+      ctx.save();
+      ctx.fillStyle = "rgba(255,255,255,0.75)";
+      ctx.font = "12px 'Press Start 2P'";
+      ctx.textAlign = "left";
+      ctx.fillText("START", 12, 24);
+      ctx.fillText("GOAL", canvas.width - 95, canvas.height - 16);
+      ctx.restore();
+    }
+
+    function movePlayer(dx, dy) {
+      if (gameEnded) return;
+
+      const nextX = player.x + dx;
+      const nextY = player.y + dy;
+
+      if (
+        nextX < 0 ||
+        nextY < 0 ||
+        nextX >= tileCount ||
+        nextY >= tileCount ||
+        isObstacle(nextX, nextY)
+      ) {
+        statusText.textContent = "ติดกำแพงแล้วน้า ลองไปทางอื่น ✨";
+        return;
+      }
+
+      player.x = nextX;
+      player.y = nextY;
+
+      const dist = Math.abs(goal.x - player.x) + Math.abs(goal.y - player.y);
+      if (dist <= 3) {
+        statusText.textContent = "ใกล้ถึงหัวใจแล้ววว 💖";
+      } else {
+        statusText.textContent = "เดินต่อได้เลย เจ้าหัวใจรออยู่!";
+      }
+
+      drawBoard();
+      checkWin();
+    }
+
+    function checkWin() {
+      if (player.x === goal.x && player.y === goal.y) {
+        endGame();
+      }
+    }
+
+    function typeWriter(element, text, speed = 38) {
+      element.innerHTML = "";
+      let i = 0;
+
+      function type() {
+        if (i < text.length) {
+          const char = text.charAt(i);
+          element.innerHTML += char === "\n" ? "<br>" : char;
+          i++;
+          setTimeout(type, speed);
+        }
+      }
+
+      type();
+    }
+
+    function endGame() {
+      gameEnded = true;
+      statusText.textContent = "ชนะแล้ววว 💖";
+      overlay.classList.add("show");
+      launchConfetti();
+
+      const message =
+`To: TT 💖
+
+Happy Birthday 22 ปีนะคนเก่ง
+ขอให้ปีนี้เธอมีแต่ความสุข
+มีรอยยิ้มเยอะ ๆ
+สมหวังในสิ่งที่ตั้งใจ
+และเจอเรื่องน่ารักพอ ๆ กับตัวเธอเลย ✨
+
+อยู่ด้วยกันไปนาน ๆ นะ
+เค้ารักเธอที่สุดเลย ❤️`;
+
+      typeWriter(finalText, message, 34);
+    }
+
+    function resetGame() {
+      player.x = 0;
+      player.y = 0;
+      gameEnded = false;
+      overlay.classList.remove("show");
+      finalText.innerHTML = "";
+      statusText.textContent = "เริ่มเกมแล้ว ไปหา 💖 ด้านขวาล่างเลย";
+      drawBoard();
+      typingEffect();
+    }
+
+    function typingEffect() {
+      const text = ">> mission: find the heart_";
+      typing.textContent = "";
+      let i = 0;
+
+      function tick() {
+        if (i <= text.length) {
+          typing.textContent = text.slice(0, i);
+          i++;
+          setTimeout(tick, 70);
+        }
+      }
+
+      tick();
+    }
+
+    document.addEventListener("keydown", (e) => {
+      const key = e.key.toLowerCase();
+
+      if (key === "w" || e.key === "ArrowUp") movePlayer(0, -1);
+      if (key === "s" || e.key === "ArrowDown") movePlayer(0, 1);
+      if (key === "a" || e.key === "ArrowLeft") movePlayer(-1, 0);
+      if (key === "d" || e.key === "ArrowRight") movePlayer(1, 0);
+    });
+
+    document.querySelectorAll(".pad-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const dir = btn.dataset.move;
+        if (dir === "up") movePlayer(0, -1);
+        if (dir === "down") movePlayer(0, 1);
+        if (dir === "left") movePlayer(-1, 0);
+        if (dir === "right") movePlayer(1, 0);
+      });
+    });
+
+    musicBtn.addEventListener("click", async () => {
+      try {
+        if (bgm.paused) {
+          await bgm.play();
+          musicBtn.textContent = "ปิดเพลง ♫";
+        } else {
+          bgm.pause();
+          musicBtn.textContent = "เปิดเพลง ♫";
+        }
+      } catch (err) {
+        alert("เบราว์เซอร์บล็อก autoplay/เสียงอยู่ ลองกดอีกครั้งนะ");
+      }
+    });
+
+    resetBtn.addEventListener("click", resetGame);
+    closeOverlay.addEventListener("click", () => overlay.classList.remove("show"));
+
+    function launchConfetti() {
+      const c = document.getElementById("confetti");
+      const cc = c.getContext("2d");
+
+      c.width = window.innerWidth;
+      c.height = window.innerHeight;
+
+      const pieces = Array.from({ length: 180 }, () => ({
+        x: Math.random() * c.width,
+        y: Math.random() * -c.height,
+        size: 4 + Math.random() * 8,
+        speedY: 2 + Math.random() * 4,
+        speedX: -2 + Math.random() * 4,
+        rot: Math.random() * Math.PI,
+        rotSpeed: -0.15 + Math.random() * 0.3,
+        color: ["#ff5fa2", "#72f2ff", "#ffd166", "#ffffff"][Math.floor(Math.random() * 4)]
+      }));
+
+      let frame = 0;
+      function animate() {
+        cc.clearRect(0, 0, c.width, c.height);
+
+        pieces.forEach(p => {
+          p.x += p.speedX;
+          p.y += p.speedY;
+          p.rot += p.rotSpeed;
+
+          cc.save();
+          cc.translate(p.x, p.y);
+          cc.rotate(p.rot);
+          cc.fillStyle = p.color;
+          cc.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
+          cc.restore();
+        });
+
+        frame++;
+        if (frame < 240) {
+          requestAnimationFrame(animate);
+        } else {
+          cc.clearRect(0, 0, c.width, c.height);
+        }
+      }
+
+      animate();
+    }
+
+    window.addEventListener("resize", () => {
+      const c = document.getElementById("confetti");
+      c.width = window.innerWidth;
+      c.height = window.innerHeight;
+      drawBoard();
+    });
+
+    createSky();
+    drawBoard();
+    typingEffect();
+  </script>
 </body>
 </html>
