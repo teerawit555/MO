@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>TT Birthday Quest 💖</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  background: radial-gradient(circle, #0f2027, #203a43, #2c5364);
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 20px;
+  letter-spacing: 3px;
+}
+
+canvas {
+  background: black;
+  border: 2px solid #00ffe0;
+  margin-top: 20px;
+}
+
+#typing {
+  margin-top: 20px;
+  font-size: 18px;
+  height: 30px;
+}
+
+#ending {
+  display: none;
+  animation: fade 2s;
+}
+
+@keyframes fade {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+</style>
+</head>
+
+<body>
+
+<h1>TT QUEST 🎮</h1>
+<p>WASD → ไปหา 💖</p>
+
+<canvas id="game" width="400" height="400"></canvas>
+
+<div id="typing"></div>
+
+<div id="ending">
+  <h2 id="text"></h2>
+  <p>Happy Birthday 22 y 💖</p>
+  <p>อยู่ด้วยกันไปนานๆนะ 🥺</p>
+  <p>เค้ารักเธอที่สุดเลย ❤️</p>
+</div>
+
+<audio autoplay loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9b7c6f.mp3">
+</audio>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let player = {x:20,y:20,size:20};
+let goal = {x:340,y:340,size:20};
+
+let img = new Image();
+img.src = "gf.jpg";
+
+img.onload = () => {
+  pixelateImage();
+  draw();
+};
+
+let pixelCanvas = document.createElement("canvas");
+let pctx = pixelCanvas.getContext("2d");
+
+function pixelateImage(){
+  let scale = 0.08;
+  let w = img.width * scale;
+  let h = img.height * scale;
+
+  pixelCanvas.width = w;
+  pixelCanvas.height = h;
+
+  pctx.drawImage(img, 0, 0, w, h);
+}
+
+function drawPixel(x,y){
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(
+    pixelCanvas,
+    0,0,pixelCanvas.width,pixelCanvas.height,
+    x,y,120,120
+  );
+}
+
+function draw(){
+  ctx.clearRect(0,0,400,400);
+
+  ctx.fillStyle="#00ffe0";
+  ctx.fillRect(player.x,player.y,player.size,player.size);
+
+  ctx.fillStyle="red";
+  ctx.fillRect(goal.x,goal.y,goal.size,goal.size);
+
+  drawPixel(140,120);
+}
+
+document.addEventListener("keydown", e=>{
+  if(e.key==="w") player.y-=10;
+  if(e.key==="s") player.y+=10;
+  if(e.key==="a") player.x-=10;
+  if(e.key==="d") player.x+=10;
+
+  checkWin();
+  draw();
+});
+
+function checkWin(){
+  if(player.x < goal.x+20 &&
+     player.x+20 > goal.x &&
+     player.y < goal.y+20 &&
+     player.y+20 > goal.y){
+    endGame();
+  }
+}
+
+function typeWriter(text, i=0){
+  if(i < text.length){
+    document.getElementById("text").innerHTML += text.charAt(i);
+    setTimeout(()=>typeWriter(text,i+1), 70);
+  }
+}
+
+function endGame(){
+  document.getElementById("ending").style.display="block";
+  typeWriter("To: TT 💖");
+}
+</script>
+
+</body>
+</html>
